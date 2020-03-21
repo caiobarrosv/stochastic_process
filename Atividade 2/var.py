@@ -89,7 +89,6 @@ class stochastic_process(object):
     def find_best_fit(self):
         # Set up empty lists to strore results
         chi_square = []
-        p_values = []
 
         # Set up 50 bins for chi-square test
         percentile_bins = np.linspace(0, 100, 51)
@@ -104,11 +103,6 @@ class stochastic_process(object):
             # Set up distribution and get fitted distribution parameters
             dist = getattr(scipy.stats, distribution)
             param = dist.fit(var_std)
-
-            # Obtain the KS test P statistic, round it to 5 decimal places
-            p = scipy.stats.kstest(var_std, distribution, args=param)[1]
-            p = np.around(p, 5)
-            p_values.append(p)
 
             # Get expected counts in percentile bins
             # This is based on a 'cumulative distrubution function' (cdf)
@@ -128,7 +122,6 @@ class stochastic_process(object):
         results = pd.DataFrame()
         results['Distribution'] = self.dist_names
         results['chi_square'] = chi_square
-        results['p_value'] = p_values
         results.sort_values(['chi_square'], inplace=True)
 
         return results
